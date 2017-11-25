@@ -1,0 +1,8 @@
+{
+  "name": "honeynet",
+  "app_id": "cc1fc014",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}
