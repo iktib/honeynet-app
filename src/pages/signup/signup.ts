@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { IonicPage, NavController, ToastController } from 'ionic-angular';
 
-import { User } from '../../providers/providers';
+import { Users } from '../../providers/providers';
 import { MainPage } from '../pages';
 
 @IonicPage()
@@ -24,7 +24,7 @@ export class SignupPage {
   private signupErrorString: string;
 
   constructor(public navCtrl: NavController,
-    public user: User,
+    public user: Users,
     public toastCtrl: ToastController,
     public translateService: TranslateService) {
 

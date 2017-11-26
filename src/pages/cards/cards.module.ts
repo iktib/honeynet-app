@@ -16,4 +16,5 @@ import { CardsPage } from './cards';
     CardsPage
   ]
 })
+
 export class CardsPageModule { }

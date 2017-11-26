@@ -1,50 +1,108 @@
 import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { IonicPage, NavController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, ToastController, LoadingController } from 'ionic-angular';
 
-import { User } from '../../providers/providers';
-import { MainPage } from '../pages';
+import { Users } from '../../providers/providers';
+// import { ProfilePage } from '../pages';
+import { JwtHelper } from "angular2-jwt";
+
+export interface Resp {
+  token: string
+}
 
 @IonicPage()
 @Component({
   selector: 'page-login',
-  templateUrl: 'login.html'
+  templateUrl: 'login.html',
+  providers: [JwtHelper]
+
 })
 export class LoginPage {
-  // The account fields for the login form.
-  // If you're using the username field with or without email, make
-  // sure to add it to the type
-  account: { email: string, password: string } = {
-    email: 'test@example.com',
-    password: 'test'
-  };
 
-  // Our translated text strings
-  private loginErrorString: string;
 
-  constructor(public navCtrl: NavController,
-    public user: User,
+  public type = 'password';
+  public showPass = false;
+
+  account: {
+    email: string,
+    password: string
+  } = {
+      email: '',
+      password: ''
+    };
+
+  constructor(
+    public navCtrl: NavController,
+    public user: Users,
     public toastCtrl: ToastController,
-    public translateService: TranslateService) {
+    private jwtHelper: JwtHelper,
+    public loadingCtrl: LoadingController
+  ) {
 
-    this.translateService.get('LOGIN_ERROR').subscribe((value) => {
-      this.loginErrorString = value;
-    })
   }
 
-  // Attempt to login in through our User service
-  doLogin() {
-    this.user.login(this.account).subscribe((resp) => {
-      this.navCtrl.push(MainPage);
-    }, (err) => {
-      this.navCtrl.push(MainPage);
-      // Unable to log in
-      let toast = this.toastCtrl.create({
-        message: this.loginErrorString,
-        duration: 3000,
-        position: 'top'
-      });
-      toast.present();
+  public doLogin() {
+
+    console.log('ionViewLoaded ForwardersPage');
+
+    let loader = this.loadingCtrl.create({
+      content: 'Подождите...',
     });
+
+    loader.present().then(() => {
+      this.user.login(this.account).subscribe((resp: any) => {
+        console.log('login', resp)
+        if (resp && resp.token) {
+          const data = this.jwtHelper.decodeToken(resp.token)
+
+          console.log('data', data)
+
+          localStorage.setItem('token', resp.token);
+          localStorage.setItem('userId', data.id);
+          localStorage.setItem('role', data.role);
+          localStorage.setItem('isActivated', data.isActivated)
+
+          const deviceToken = localStorage.getItem('deviceToken')
+
+          if (deviceToken) {
+            this.user.registerToken(this.user.getUserId(), deviceToken).subscribe((resp) => {
+              // alert('Token registrated' + resp)
+            })
+          }
+
+
+          console.log(' data.isActivated', data.isActivated, typeof (data.isActivated))
+          if (JSON.parse(data.isActivated)) {
+            this.navCtrl.setRoot('TabsPage');
+          } else {
+            this.navCtrl.setRoot('TabsPage');
+          }
+
+          // this.navCtrl.setRoot('TabsPage');
+        }
+      }, (err) => {
+        console.log('problems', err)
+
+        let toast = this.toastCtrl.create({
+          message: err.error.message || 'Возникли проблемы - свяжитесь с администратором',
+          duration: 3000,
+          position: 'top'
+        });
+        toast.present();
+      });
+
+      loader.dismiss();
+    });
+
+
+  }
+
+  public showPassword() {
+    this.showPass = !this.showPass;
+
+    if (this.showPass) {
+      this.type = 'text';
+    } else {
+      this.type = 'password';
+    }
   }
 }

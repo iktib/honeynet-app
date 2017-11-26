@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
 
 import { Item } from '../../models/item';
-import { Items } from '../../providers/providers';
+import { HoneypotProvider } from '../../providers/honeypot/honeypot';
 
 @IonicPage()
 @Component({
@@ -10,16 +10,29 @@ import { Items } from '../../providers/providers';
   templateUrl: 'list-master.html'
 })
 export class ListMasterPage {
-  currentItems: Item[];
+  currentItems: any[];
 
-  constructor(public navCtrl: NavController, public items: Items, public modalCtrl: ModalController) {
-    this.currentItems = this.items.query();
+  constructor(
+    public navCtrl: NavController,
+    public modalCtrl: ModalController,
+    public honeypots: HoneypotProvider
+  ) {
+
   }
 
   /**
    * The view loaded, let's query our items for the list
    */
   ionViewDidLoad() {
+    const userId = localStorage.getItem('userId')
+
+    this.honeypots.getUserHoneyPots(userId).subscribe(
+
+      (data: any) => {
+        console.log('data cards', data.data)
+        this.currentItems = data.data
+      })
+
   }
 
   /**
@@ -30,7 +43,7 @@ export class ListMasterPage {
     let addModal = this.modalCtrl.create('ItemCreatePage');
     addModal.onDidDismiss(item => {
       if (item) {
-        this.items.add(item);
+        //  this.items.add(item);
       }
     })
     addModal.present();
@@ -40,7 +53,7 @@ export class ListMasterPage {
    * Delete an item from the list of items.
    */
   deleteItem(item) {
-    this.items.delete(item);
+    // this.items.delete(item);
   }
 
   /**
