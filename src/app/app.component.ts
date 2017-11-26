@@ -215,7 +215,10 @@ export class MyApp {
             text: 'Посмотреть',
             handler: () => {
               // TODO: Your logic here
-              this.nav.push('OrderDetailPage', { orderId: data.additionalData.orderId });
+              this.nav.push('NotifDetailPage', { 
+                honeypotId: data.additionalData.honeypotId,
+                hackerIp: data.additionalData.hackerIp,
+              });
             }
           }]
         });
@@ -223,7 +226,10 @@ export class MyApp {
       } else {
         //if user NOT using app and push notification comes
         //TODO: Your logic on click of push notification directly
-        this.nav.push('OrderDetailPage', { orderId: data.additionalData.orderId });
+        this.nav.push('NotifDetailPage', { 
+          honeypotId: data.additionalData.honeypotId,
+          hackerIp: data.additionalData.hackerIp,
+        });
         console.log('Push notification clicked');
       }
     });

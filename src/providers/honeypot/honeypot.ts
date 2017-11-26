@@ -25,6 +25,21 @@ export class HoneypotProvider {
     return seq;
   }
 
+  public getHoneypotById(honeypotId) {
+
+    let seq = this.api.get(`honeyNotes/${honeypotId}`).share();
+    seq.subscribe(
+      (res: any) => {
+        if (res.status == 'success') {
+          // this._loggedIn(res);
+        }
+      }, (err: any) => {
+        console.error('ERROR', err);
+      });
+    return seq;
+  }
+
+
   public getUserHoneyPots(userId) {
 
     let seq = this.api.get(`honeyNotes/filter?clientId=${userId}`).share();

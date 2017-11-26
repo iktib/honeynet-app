@@ -25,7 +25,21 @@
         <p>{{item.ipAddress}}:{{item.connectionPort}}</p>
 
         <ion-note item-end>
-          Работает
+
+            { status = getStatus(item) }
+            
+          <div *ngIf="!item.status">
+            <ion-icon name="alert" color="danger">
+              Алёёёёёрт
+            </ion-icon>
+          </div>
+
+          <div *ngIf="!item.status">
+            <ion-icon name="checkmark-circle" color="secondary">
+              Оки доки
+            </ion-icon>
+          </div>
+
         </ion-note>
 
       </button>
